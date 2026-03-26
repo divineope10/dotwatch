@@ -1,70 +1,99 @@
-# Getting Started with Create React App
+# ScamWatch
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Community-powered scam reporting and awareness platform built with React + Firebase.
 
-## Available Scripts
+## Setup
 
-In the project directory, you can run:
+### 1. Create a Firebase project
 
-### `npm start`
+1. Go to [Firebase Console](https://console.firebase.google.com)
+2. Click **Add project** and follow the steps
+3. Enable **Authentication** → Sign-in methods → turn on **Email/Password** and **Google**
+4. Enable **Firestore Database** → Start in **production mode**
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### 2. Get your Firebase config
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Firebase Console → Project Settings → Your Apps → click the web icon (`</>`) → copy the config object.
 
-### `npm test`
+### 3. Add your config
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Open `src/firebase.js` and replace the placeholder values:
 
-### `npm run build`
+```js
+const firebaseConfig = {
+  apiKey: "your-api-key",
+  authDomain: "your-project.firebaseapp.com",
+  projectId: "your-project-id",
+  storageBucket: "your-project.appspot.com",
+  messagingSenderId: "your-sender-id",
+  appId: "your-app-id",
+};
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 4. Deploy Firestore security rules
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+npm install -g firebase-tools
+firebase login
+firebase init firestore   # select your project
+firebase deploy --only firestore:rules
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Or paste the contents of `firestore.rules` directly in the Firebase Console under Firestore → Rules.
 
-### `npm run eject`
+### 5. Install and run
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```bash
+npm install
+npm start
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Project structure
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```
+src/
+  firebase.js           # Firebase init + exports
+  App.jsx               # Router + auth wrapper
+  index.css             # Global styles + design tokens
+  context/
+    AuthContext.jsx     # Auth state provider + hook
+  pages/
+    Auth.jsx            # Login / signup page
+    Feed.jsx            # Main scam feed
+  components/
+    Navbar.jsx          # Top nav with auth state
+    ScamCard.jsx        # Individual scam report card
+    ReportModal.jsx     # Report submission modal
+```
 
-## Learn More
+## Firestore data model
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Each document in the `scams` collection:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```js
+{
+  title: string,           // Short scam title
+  type: string,            // Category (Investment, Romance, etc.)
+  channel: string,         // How it was delivered (WhatsApp, SMS, etc.)
+  severity: string,        // "High" | "Medium" | "Low"
+  excerpt: string,         // Auto-generated short preview
+  description: string,     // Full description
+  avoidanceTip: string,    // How to avoid
+  amountLost: string,      // Optional reported loss
+  reporterId: string,      // Firebase Auth UID
+  reporterName: string,    // Display name or email prefix
+  helpfulVotes: string[],  // Array of UIDs who found it helpful
+  createdAt: Timestamp,    // Firestore server timestamp
+}
+```
 
-### Code Splitting
+## Next steps
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- [ ] Add pagination / infinite scroll to the feed
+- [ ] Add a scam detail page (`/scam/:id`)
+- [ ] Add moderation queue for report review
+- [ ] Add AI-generated tip enhancement (OpenRouter + Claude)
+- [ ] Add email notifications for new reports in a category
+- [ ] Add a "trending scams" section
