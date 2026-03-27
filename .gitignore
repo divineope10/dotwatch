@@ -11,6 +11,11 @@
 # production
 /build
 
+# environment variables - never commit these
+.env
+.env.local
+.env.production
+
 # misc
 .DS_Store
 .env.local
