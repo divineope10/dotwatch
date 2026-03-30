@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
-import Navbar from "./components/NavBar";
+import NavBar from "./components/NavBar";
 import ReportModal from "./components/ReportModal";
 import Feed from "./pages/Feed";
 import Auth from "./pages/Auth";
@@ -20,7 +20,7 @@ function AppRoutes() {
   const [showReport, setShowReport] = useState(false);
   return (
     <>
-      <Navbar onReport={() => setShowReport(true)} />
+      <NavBar onReport={() => setShowReport(true)} />
       {showReport && user && <ReportModal onClose={() => setShowReport(false)} />}
       <Routes>
         <Route path="/auth" element={user ? <Navigate to="/" replace /> : <Auth />} />

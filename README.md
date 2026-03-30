@@ -63,7 +63,7 @@ src/
     Auth.jsx            # Login / signup page
     Feed.jsx            # Main scam feed
   components/
-    Navbar.jsx          # Top nav with auth state
+    NavBar.jsx          # Top nav with auth state
     ScamCard.jsx        # Individual scam report card
     ReportModal.jsx     # Report submission modal
 ```
